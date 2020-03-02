@@ -6,7 +6,7 @@
 using std::cout;
 using std::endl;
 
-namespace testTask {
+namespace TestTask {
     const unsigned int STR_LENGTH = 7;
 
     const unsigned int LETTERS_COUNT = 26 + 1;
@@ -14,30 +14,39 @@ namespace testTask {
 
     const unsigned int NUMBERS_COUNT = 10 + 1;
     char numbers[NUMBERS_COUNT] = "0123456789";
-}
 
-bool isEqualCodeAndNumber (std::string str1, std::string str2);
-void getCodeAndNumber (std::string &str, std::string &strCode);
-bool isLetter (char symbol);
-bool isNumber (char symbol);
-bool isEqual (std::string str1, std::string str2);
+
+    bool isEqualCodeAndNumber (std::string str1, std::string str2);
+    void getCodeAndNumber (std::string &str, std::string &strCode);
+    bool isStringsEqual (std::string str1, std::string str2);
+    bool isLetter (char symbol);
+    bool isNumber (char symbol);
+}
 
 
 int main (int argc, char *argv []) {
 
-    bool t = isEqualCodeAndNumber("AFL1", "AFL11111");
-
-    cout << t << endl;
+    cout << TestTask::isEqualCodeAndNumber("AFL1", "AFL0001") << "\n-----\n\n";
+    cout << TestTask::isEqualCodeAndNumber("D2 25", "D2025")  << "\n-----\n\n";
+    cout << TestTask::isEqualCodeAndNumber("D2 25", "D225")  << "\n-----\n\n";
+    cout << TestTask::isEqualCodeAndNumber("D2025", "D225")  << "\n-----\n\n";
+    cout << TestTask::isEqualCodeAndNumber("MD 1234", "1234")  << "\n-----\n\n";
 
     return 0;
 }
 
-bool isEqualCodeAndNumber (std::string str1, std::string str2) {
-//    cout << "s1 sz " << str1.size() << endl;
-//    cout << "s2 sz " << str2.size() << endl;
+// -----------------------------------------------------------------------------
+// Основная функция сравнения
+// -----------------------------------------------------------------------------
+bool TestTask::isEqualCodeAndNumber (std::string str1, std::string str2) {
+
+cout << "str 1: " << str1 << endl
+     << "str 2: " << str2 << endl
+     << endl;
 
     // Если длина хотя бы одной из строк больше 7, выходим
-    if ((str1.size() > testTask::STR_LENGTH) || (str1.size() > testTask::STR_LENGTH)) {
+    if ((str1.size() > TestTask::STR_LENGTH)
+       || (str1.size() > TestTask::STR_LENGTH)) {
         return false;
     }
 
@@ -46,11 +55,8 @@ bool isEqualCodeAndNumber (std::string str1, std::string str2) {
         return false;
     }
 
-
     std::string strCode1;
-//    std::string strNumber1;
     std::string strCode2;
-//    std::string strNumber2;
 
     getCodeAndNumber (str1, strCode1);
     getCodeAndNumber (str2, strCode2);
@@ -63,49 +69,22 @@ cout << "number 1: " << str1 << endl
      << "number 2: " << str2 << endl
      << endl;
 
-    // Находим размеры большей и меньшей строк
-    unsigned maxLength = (str1.size() > str2.size()) ? str1.size() : str2.size();
-//    unsigned minLength = (str1.size() < str2.size()) ? str1.size() : str2.size();
+cout << "codes: " << isStringsEqual(strCode1, strCode2) << endl
+     << "numbers: " << isStringsEqual(str1, str2) << endl
+     << endl;
 
-    // Итератор для 2й строки
-//    unsigned j = 0;
-
-    // Проходим по большей строке
-//    for (unsigned i = 0; i < STR_LENGTH; ++i) {
-    for (unsigned i = 0, j = 0; ((i < maxLength) || (j < maxLength));) {
-
-cout << "s1 "<<str1[i]<< "; s2 "<<str2[i]<<endl;
-
-        // Сравниваем символы
-        if (str1[i] != str2[j]) {
-            return false;
-        }
-
-        if (i < str1.size() - 1) {
-            ++i;
-        }
-//        else return false;
-
-
-        ++i;
-        ++j;
-
-//        if (j < minLength) {
-//            ++j;
-//        }
-//        else return false;
-
-        // Пока длины строк позволяют...
-//        if ((i < str1.size() && (i < str2.size()) {
-//            //
-//        }
+    // Если не равны по отдельности код и номер, выходим
+    if (! isStringsEqual(strCode1, strCode2) || ! isStringsEqual(str1, str2)) {
+        return false;
     }
 
     return true;
 }
 
-//
-bool isEqual (std::string str1, std::string str2) {
+// -----------------------------------------------------------------------------
+// Проверяем, равны ли строки
+// -----------------------------------------------------------------------------
+bool TestTask::isStringsEqual (std::string str1, std::string str2) {
     if (str1.size() != str2.size()) {
         return false;
     }
@@ -118,9 +97,12 @@ bool isEqual (std::string str1, std::string str2) {
 
     return true;
 }
+// -----------------------------------------------------------------------------
 
-// Разделяем строку на код и номер
-void getCodeAndNumber (std::string &str, std::string &strCode) {
+// -----------------------------------------------------------------------------
+// Разделяем строку на код и номер рейса
+// -----------------------------------------------------------------------------
+void TestTask::getCodeAndNumber (std::string &str, std::string &strCode) {
 
     std::ostringstream code;
 
@@ -148,12 +130,20 @@ void getCodeAndNumber (std::string &str, std::string &strCode) {
     }
 
     strCode = code.str();
-}
 
+    // Убираем пробелы и лидирующие нули в номере рейса
+    while (*(str.begin()) == ' ' || *(str.begin()) == '0') {
+        str.erase(str.begin());
+    }
+}
+// -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
 // Проверка, является ли символ буквой
-bool isLetter (char symbol) {
-    for (int i = 0; i < testTask::LETTERS_COUNT; ++i) {
-        if (symbol == testTask::letters[i]) {
+// -----------------------------------------------------------------------------
+bool TestTask::isLetter (char symbol) {
+    for (int i = 0; i < TestTask::LETTERS_COUNT; ++i) {
+        if (symbol == TestTask::letters[i]) {
             return true;
         }
     }
@@ -161,11 +151,14 @@ bool isLetter (char symbol) {
     // Не нашли соответствие среди символов
     return false;
 }
+// -----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
 // Проверка, является ли символ числом
-bool isNumber (char symbol) {
-    for (int i = 0; i < testTask::NUMBERS_COUNT; ++i) {
-        if (symbol == testTask::numbers[i]) {
+// -----------------------------------------------------------------------------
+bool TestTask::isNumber (char symbol) {
+    for (int i = 0; i < TestTask::NUMBERS_COUNT; ++i) {
+        if (symbol == TestTask::numbers[i]) {
             return true;
         }
     }
@@ -173,4 +166,5 @@ bool isNumber (char symbol) {
     // Не нашли соответствие среди символов
     return false;
 }
+// -----------------------------------------------------------------------------
 
