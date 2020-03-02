@@ -28,9 +28,9 @@ int main (int argc, char *argv []) {
 
     cout << TestTask::isEqualCodeAndNumber("AFL1", "AFL0001") << "\n-----\n\n";
     cout << TestTask::isEqualCodeAndNumber("D2 25", "D2025")  << "\n-----\n\n";
-    cout << TestTask::isEqualCodeAndNumber("D2 25", "D225")  << "\n-----\n\n";
-    cout << TestTask::isEqualCodeAndNumber("D2025", "D225")  << "\n-----\n\n";
-    cout << TestTask::isEqualCodeAndNumber("MD 1234", "1234")  << "\n-----\n\n";
+    cout << TestTask::isEqualCodeAndNumber("D2 25", "D225")   << "\n-----\n\n";
+    cout << TestTask::isEqualCodeAndNumber("D2025", "D225")   << "\n-----\n\n";
+    cout << TestTask::isEqualCodeAndNumber("MD 1234", "1234") << "\n-----\n\n";
 
     return 0;
 }
@@ -40,9 +40,9 @@ int main (int argc, char *argv []) {
 // -----------------------------------------------------------------------------
 bool TestTask::isEqualCodeAndNumber (std::string str1, std::string str2) {
 
-cout << "str 1: " << str1 << endl
-     << "str 2: " << str2 << endl
-     << endl;
+//    cout << "str 1: " << str1 << endl
+//         << "str 2: " << str2 << endl
+//         << endl;
 
     // Если длина хотя бы одной из строк больше 7, выходим
     if ((str1.size() > TestTask::STR_LENGTH)
@@ -61,17 +61,17 @@ cout << "str 1: " << str1 << endl
     getCodeAndNumber (str1, strCode1);
     getCodeAndNumber (str2, strCode2);
 
-cout << "code 1: " << strCode1 << endl
-     << "code 2: " << strCode2 << endl
-     << endl;
-
-cout << "number 1: " << str1 << endl
-     << "number 2: " << str2 << endl
-     << endl;
-
-cout << "codes: " << isStringsEqual(strCode1, strCode2) << endl
-     << "numbers: " << isStringsEqual(str1, str2) << endl
-     << endl;
+//    cout << "code 1: " << strCode1 << endl
+//         << "code 2: " << strCode2 << endl
+//         << endl;
+//
+//    cout << "number 1: " << str1 << endl
+//         << "number 2: " << str2 << endl
+//         << endl;
+//
+//    cout << "codes: " << isStringsEqual(strCode1, strCode2) << endl
+//         << "numbers: " << isStringsEqual(str1, str2) << endl
+//         << endl;
 
     // Если не равны по отдельности код и номер, выходим
     if (! isStringsEqual(strCode1, strCode2) || ! isStringsEqual(str1, str2)) {
@@ -85,12 +85,15 @@ cout << "codes: " << isStringsEqual(strCode1, strCode2) << endl
 // Проверяем, равны ли строки
 // -----------------------------------------------------------------------------
 bool TestTask::isStringsEqual (std::string str1, std::string str2) {
+    // Если размеры не совпадают, строки точно не равны - выходим
     if (str1.size() != str2.size()) {
         return false;
     }
 
-    for (unsigned i = 0; i < str1.size(); ++i) {
-        if (str1[i] != str2[i]) {
+    // Поэлементно сравниваем строки (не совпадают символы - выходим)
+    for (std::string::iterator i1 = str1.begin(), i2 = str2.begin();
+            i1 < str1.end(); ++i1, ++i2) {
+        if (*i1 != *i2) {
             return false;
         }
     }
@@ -106,27 +109,21 @@ void TestTask::getCodeAndNumber (std::string &str, std::string &strCode) {
 
     std::ostringstream code;
 
-    if (isNumber(str[0]) && isLetter(str[1])) {
-        code << str[0] << str[1];
-        str.erase(0, 2);
+    // Разбираем варианты кодов:
+
+    // код вида AAA (три буквы)
+    if (isLetter(str[0]) && isLetter(str[1]) && isLetter(str[2])) {
+        code << str[0] << str[1] << str[2];
+        str.erase(0, 3);
     }
 
-    if (isLetter(str[0])) {
-        if (isNumber(str[1])) {
-            code << str[0] << str[1];
-            str.erase(0, 2);
-        }
-
-        if (isLetter(str[1])) {
-            if (isLetter(str[2])) {
-                code << str[0] << str[1] << str[2];
-                str.erase(0, 3);
-            }
-            else {
-                code << str[0] << str[1];
-                str.erase(0, 2);
-            }
-        }
+    else
+    if (  (isNumber(str[0]) && isLetter(str[1]))  // код вида 1A
+       || (isLetter(str[0]) && isNumber(str[1]))  // код вида A1
+       || (isLetter(str[0]) && isLetter(str[1]))  // код вида AA
+    ) {
+        code << str[0] << str[1];
+        str.erase(0, 2);
     }
 
     strCode = code.str();
